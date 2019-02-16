@@ -100,5 +100,9 @@ venv.bak/
 # mkdocs documentation
 /site
 
+#ignote old files
+*decr*
+
 # mypy
 .mypy_cache/
+*.DS_Store
