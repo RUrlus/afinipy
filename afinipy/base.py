@@ -59,7 +59,11 @@ class Afinipy(object):
 
         # initialise the directory collection where the target directory
         # is the root directory
-        self.dirs = {}
+        self.dirs = []
+
+    def build_init(self):
+        self.directory_parser()
+        self.top_level()
 
     def _get_parents(self, path):
         """Get and concat parents to directory
@@ -105,10 +109,37 @@ class Afinipy(object):
             if self._exclude_dir(dname):
                     continue
             else:
-                self.dirs[dname] = Directory(
-                    path=root,
-                    level=pf.dir_depth(root, self._base_depth),
-                    parents=self._get_parents(root),
-                    files=files,
-                    exclude=self._module_exclude
+                self.dirs.append(
+                    Directory(
+                        path=root,
+                        level=pf.dir_depth(root, self._base_depth),
+                        parents=self._get_parents(root),
+                        files=files,
+                        exclude=self._module_exclude
+                    )
                 )
+
+    def top_level(self):
+        """Create __init__ at root level with all user defined functions
+        and classes in the directory tree
+        """
+        secondary_line = False
+        all_udefs = []
+        with open(os.path.join(self._base_path, '__init__.py'), 'w+') as init_file:
+            # Write the __init__, create if it doesn't exist
+            for direc in self.dirs:
+                for module in sorted(direc.modules, key=lambda x: x.name.lower()):
+                    all_udefs.extend(module.udefs)
+                    if secondary_line:
+                        init_file.write('\n')
+                    else:
+                        secondary_line = True
+                    for udef in sorted(module.udefs, key=lambda x: x.lower()):
+                        # Template imports
+                        init_file.write('from .{0}{1} import {2}\n'.format(module.parents, module.name, udef))
+
+            # The objects that will be added for __all__
+            # Template for __all__ functions in all modules
+            init_file.write('\n__all__ = {}\n'.format(sorted(all_udefs, key=lambda x: x.lower())))
+        init_file.close()
+        print('{} has been appended/generated'.format(os.path.join(self._base_path, '__init__.py')))

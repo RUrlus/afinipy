@@ -1,13 +1,15 @@
 import os
+import sys
 
 import afinipy.path_funcs as pf
+from afinipy.module import Module
 
 
 class Directory(object):
     """Class that orchastrates the parsing of a directory in
     the tree of the target directory
     """
-    def __init__(self, path, level, parents, files, exclude=None):
+    def __init__(self, path, level, parents, files, exclude=None, udef_exclude=None):
         """Initialise the class
 
         Parameters
@@ -22,6 +24,8 @@ class Directory(object):
             The files in the directory
         exclude : list-like
             The modules to exclude
+        udef_exclude : None, str
+            Exclude `classes` or `functions`
         """
         # get absolute path and check existence
         self.root = pf.adir(path)
@@ -42,9 +46,12 @@ class Directory(object):
         # the modules that should be excluded
         self.exclude = exclude or set()
         self.exclude.update({'__init__', 'setup'})
+
+        self.udef_exclude = udef_exclude
+
         # files parser sets all the python modules found
-        # in the directory
-        self.modules = self._files_parser()
+        # in the directory and creates module objects for each
+        self.files_parser()
 
     def _ismodule(self, f):
         """Check if file is python module
@@ -67,18 +74,28 @@ class Directory(object):
         else:
             return False
 
-    def _files_parser(self):
+    def files_parser(self):
         """Filter the python modules from the files and set as modules,
-        where we exclude:
-            - dotfiles
-            - private files, those starting with `_`
-            - __init__
-            _ setup
+        where we exclude dotfiles, files starting with `_` and
+        __init__ files.
 
-        Returns
-        -------
-        set
-            All the python modules that fulfill the criteria
+        For each module we create a Module instance that extracts the
+        functions and classes without importing and correcting for
+        star imports in the module
         """
+        # create the list of module names
+        self.module_names = set([os.path.splitext(f)[0] for f in self.files if self._ismodule(f)])
 
-        return set([os.path.splitext(f)[0] for f in self.files if self._ismodule(f)])
+        # prepend the sys.path with the directory, this is has no
+        # side-effects outside this interpreter process and would have
+        # otherwise been done by pyclbr
+        sys.path = [self.root] + sys.path
+
+        self.modules = [
+            Module(
+                name=module,
+                path=os.path.join(self.root, module) + '.py',
+                parents=self.parents,
+                exclude=self.udef_exclude)
+            for module in self.module_names
+        ]
