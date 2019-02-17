@@ -90,6 +90,9 @@ class Afinipy(object):
         if self._dry_run:
             self._verbose = True
 
+        # reset self.dirs to prevent extending
+        self.dirs = []
+
         # start parsing
         self.directory_parser()
 
