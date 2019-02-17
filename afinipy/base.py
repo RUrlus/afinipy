@@ -13,12 +13,7 @@ class Afinipy(object):
     """Base class that orchastrates the parsing and creation of
     the __init__ file
     """
-    def __init__(
-            self,
-            path,
-            mode=None,
-            dir_exclude=None,
-            module_exclude=None):
+    def __init__(self, path, **kwargs):
         """Initialise the class
 
         Parameters
@@ -29,23 +24,45 @@ class Afinipy(object):
             The mode to run afinipy in. Options are:
             - top_level: everything is set in top level __init__
             - recursive: each directory level gets own __init__
-        dir_exclude : list-like
-            The directories to exclude
+            Optional, default is `top_level`
+        package : str
+            Package name; default is `None`
+        exclude : list-like
+            The directories to exclude; default is `None`
         module_exclude : list-like
-            The modules to exclude
+            The modules to exclude; default is `None`
+        udef_exclude : list-like
+            The classes or functions to exclude; default is `None`
+        verbose : bool
+            Print import statements; default is `False`
         """
         # validate type and value of parameters
         if not isinstance(path, str):
             raise WrongSettingsType('path', path, str)
 
-        if (mode is not None) and (mode not in {'top_level', 'recursive'}):
-            raise IllegalSetting('mode', mode)
-
-        # The way to build the inits
-        self._mode = mode or 'top_level'
-
         # get absolute path and check existence
         self._base_path = pf.adir(path)
+
+        # The way to build the inits
+        self._mode = kwargs.pop('mode', 'top_level')
+
+        # validate mode setting
+        if (self._mode is not None) and (self._mode not in {'top_level', 'recursive'}):
+            raise IllegalSetting('mode', self._mode)
+
+        # The prefix for the import statements
+        self._package = kwargs.pop('package', '') + '.'
+
+        # the directories the user wants excluded
+        self._dir_exclude = kwargs.pop('dir_exclude', set())
+
+        self._module_exclude = kwargs.pop('module_exclude', set())
+
+        self._udef_exclude = kwargs.pop('udef_exclude', None)
+
+        self._verbose = kwargs.pop('verbose', False)
+
+        self._name = pf.dir_name(self._base_path)
 
         # the number of directories we are from system root
         self._base_depth = pf.dir_depth(self._base_path)
@@ -53,17 +70,21 @@ class Afinipy(object):
         # list of the names of the directories from root
         self._base_path_list = pf.path_list(self._base_path)
 
-        self._dir_exclude = dir_exclude or set()
-
-        self._module_exclude = module_exclude or set()
-
         # initialise the directory collection where the target directory
         # is the root directory
         self.dirs = []
 
     def build_init(self):
+        """Create the init file(s)
+
+        Run the directory parser which will build inits per
+        directory if mode is recursive else collect all statements
+        and create the init
+        """
         self.directory_parser()
-        self.top_level()
+        if self._mode == 'top_level':
+            self.top_level()
+            self.write_init()
 
     def _get_parents(self, path):
         """Get and concat parents to directory
@@ -78,7 +99,7 @@ class Afinipy(object):
         str
             The parents concatonated with seperator sep
         """
-        return uf.concat_strings(uf.ordered_notin(pf.path_list(os.path.split(path)[0]), self._base_path_list))
+        return uf.concat_imports(uf.ordered_notin(pf.path_list(os.path.split(path)[0]), self._base_path_list))
 
     def _exclude_dir(self, d):
         """Determine if the directory is relevant
@@ -112,34 +133,51 @@ class Afinipy(object):
                 self.dirs.append(
                     Directory(
                         path=root,
+                        mode=self._mode,
+                        package=self._package,
                         level=pf.dir_depth(root, self._base_depth),
                         parents=self._get_parents(root),
                         files=files,
-                        exclude=self._module_exclude
+                        exclude=self._module_exclude,
+                        udef_exclude=self._udef_exclude,
+                        verbose=self._verbose
                     )
                 )
+
+    def write_init(self):
+        """Write the imports string and all_udefs list to the init file
+
+        """
+        with open(os.path.join(self._base_path, '__init__.py'), 'w+') as init_file:
+            # Write the __init__, create if it doesn't exist
+            init_file.write(self.imports)
+
+            # The objects that will be added for __all__
+            # Template for __all__ functions in all modules
+            init_file.write('\n__all__ = {}\n'.format(sorted(self.all_udefs, key=lambda x: x.lower())))
+        init_file.close()
+        print('{} has been appended/generated\n'.format(os.path.join(self._base_path, '__init__.py')))
 
     def top_level(self):
         """Create __init__ at root level with all user defined functions
         and classes in the directory tree
         """
-        secondary_line = False
-        all_udefs = []
-        with open(os.path.join(self._base_path, '__init__.py'), 'w+') as init_file:
-            # Write the __init__, create if it doesn't exist
-            for direc in self.dirs:
-                for module in sorted(direc.modules, key=lambda x: x.name.lower()):
-                    all_udefs.extend(module.udefs)
-                    if secondary_line:
-                        init_file.write('\n')
-                    else:
-                        secondary_line = True
-                    for udef in sorted(module.udefs, key=lambda x: x.lower()):
-                        # Template imports
-                        init_file.write('from .{0}{1} import {2}\n'.format(module.parents, module.name, udef))
-
-            # The objects that will be added for __all__
-            # Template for __all__ functions in all modules
-            init_file.write('\n__all__ = {}\n'.format(sorted(all_udefs, key=lambda x: x.lower())))
-        init_file.close()
-        print('{} has been appended/generated'.format(os.path.join(self._base_path, '__init__.py')))
+        self.imports = []
+        self.all_udefs = []
+        for direc in self.dirs:
+            for module in sorted(direc.modules, key=lambda x: x.name.lower()):
+                self.all_udefs.extend(module.udefs)
+                block = []
+                for udef in sorted(module.udefs, key=lambda x: x.lower()):
+                    # Template imports
+                    block.append('from {0}{1} import {2}\n'.format(
+                        self._package,
+                        uf.concat_imports((module.parents, module.name)),
+                        udef
+                        )
+                    )
+                self.imports.append(''.join(block))
+        self.imports = '\n'.join(self.imports)
+        if self._verbose:
+            print('Import statements directory: ', self._name)
+            print(self.imports)
