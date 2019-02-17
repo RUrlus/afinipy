@@ -2,6 +2,7 @@ import os
 
 import afinipy.utils as uf
 import afinipy.path_funcs as pf
+
 from afinipy.module import Module
 
 
@@ -9,8 +10,8 @@ class Directory(object):
     """Class that orchastrates the parsing of a directory in
     the tree of the target directory
     """
-    def __init__(self, path, mode, package, level, parents, files, exclude=None, udef_exclude=None,
-                 verbose=False):
+    def __init__(self, path, mode, package, parents, files, exclude=None, udef_exclude=None,
+                 verbose=False, dry_run=False):
         """Initialise the class
 
         Parameters
@@ -21,8 +22,6 @@ class Directory(object):
             top_level or recursive
         package : str
             the prefix for the import statement ['.', 'package_name']
-        level : int
-            the number of directories down from root
         parents : str
             The parent directories starting at the target path
         files : list
@@ -33,6 +32,8 @@ class Directory(object):
             Exclude `classes` or `functions`
         verbose : bool
             Print the import statements
+        dry_run : bool
+            do not write, only print
         """
         # get absolute path and check existence
         self.root = pf.adir(path)
@@ -42,9 +43,6 @@ class Directory(object):
 
         # the prefix for the print statements
         self.package = package
-
-        # the level of the directory
-        self.level = level
 
         # name of the class is the directory name
         self.name = pf.dir_name(self.root)
@@ -65,13 +63,19 @@ class Directory(object):
         # print import blocks
         self.verbose = verbose
 
+        # Don't write only print
+        self.dry_run = dry_run
+        if self.dry_run:
+            self.verbose = True
+
         # files parser sets all the python modules found
         # in the directory and creates module objects for each
         self.files_parser()
 
         if self.mode == 'recursive':
             self.build_init()
-            self.write_init()
+            if not self.dry_run:
+                self.write_init()
 
     def _ismodule(self, f):
         """Check if file is python module
@@ -94,14 +98,6 @@ class Directory(object):
         else:
             return False
 
-    def get_parents(self):
-        """Set the right import string for the parents
-        """
-        if self.level >= 1:
-            return uf.concat_imports((self.parents, self.name))
-        else:
-            return self.parents
-
     def files_parser(self):
         """Filter the python modules from the files and set as modules,
         where we exclude dotfiles, files starting with `_` and
@@ -118,7 +114,7 @@ class Directory(object):
             Module(
                 name=module,
                 path=os.path.join(self.root, module) + '.py',
-                parents=self.get_parents(),
+                parents=self.parents,
                 exclude=self.udef_exclude)
             for module in self.module_names
         ]
@@ -130,8 +126,10 @@ class Directory(object):
         alphabetically per module and within modules. A module's
         statements are seperated by a newline
         """
-        if self.package != '.':
-            self.package = self.package + self.name + '.'
+        # if recursive and no package is given we strip the parents
+        if self.package == '':
+            self.parents = ''
+
         self.imports = []
         self.all_udefs = []
         for module in sorted(self.modules, key=lambda x: x.name.lower()):
@@ -142,13 +140,14 @@ class Directory(object):
 
             for udef in sorted(module.udefs, key=lambda x: x.lower()):
                 # Template imports
-                block.append('from {0}{1} import {2}\n'.format(self.package, module.name, udef))
+                block.append('from {0} import {1}\n'.format(uf.concat_imports((self.parents, module.name)), udef))
             # create block of import statements per module seperated by empty line
             self.imports.append(''.join(block))
         self.imports = '\n'.join(self.imports)
         if self.verbose:
             print('Import statements directory: ', self.name)
             print(self.imports)
+            print('\n__all__ = {}\n'.format(sorted(self.all_udefs, key=lambda x: x.lower())))
 
     def write_init(self):
         """Write the imports string and all_udefs list to the init file

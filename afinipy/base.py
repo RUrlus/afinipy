@@ -33,8 +33,6 @@ class Afinipy(object):
             The modules to exclude; default is `None`
         udef_exclude : list-like
             The classes or functions to exclude; default is `None`
-        verbose : bool
-            Print import statements; default is `False`
         """
         # validate type and value of parameters
         if not isinstance(path, str):
@@ -51,7 +49,7 @@ class Afinipy(object):
             raise IllegalSetting('mode', self._mode)
 
         # The prefix for the import statements
-        self._package = kwargs.pop('package', '') + '.'
+        self._package = kwargs.pop('package', '')
 
         # the directories the user wants excluded
         self._dir_exclude = kwargs.pop('dir_exclude', set())
@@ -59,8 +57,6 @@ class Afinipy(object):
         self._module_exclude = kwargs.pop('module_exclude', set())
 
         self._udef_exclude = kwargs.pop('udef_exclude', None)
-
-        self._verbose = kwargs.pop('verbose', False)
 
         self._name = pf.dir_name(self._base_path)
 
@@ -74,16 +70,33 @@ class Afinipy(object):
         # is the root directory
         self.dirs = []
 
-    def build_init(self):
+    def build_init(self, **kwargs):
         """Create the init file(s)
 
         Run the directory parser which will build inits per
         directory if mode is recursive else collect all statements
         and create the init
+
+        Parameters
+        ----------
+        verbose : bool
+            Print import statements; default is `False`
+        dry_run : bool
+            do not write, only print
         """
+        self._verbose = kwargs.pop('verbose', False)
+
+        self._dry_run = kwargs.pop('dry_run', False)
+        if self._dry_run:
+            self._verbose = True
+
+        # start parsing
         self.directory_parser()
+
         if self._mode == 'top_level':
             self.top_level()
+
+        if not self._dry_run:
             self.write_init()
 
     def _get_parents(self, path):
@@ -99,7 +112,7 @@ class Afinipy(object):
         str
             The parents concatonated with seperator sep
         """
-        return uf.concat_imports(uf.ordered_notin(pf.path_list(os.path.split(path)[0]), self._base_path_list))
+        return uf.concat_imports((self._package, pf.path_list(path)[self._base_depth:]))
 
     def _exclude_dir(self, d):
         """Determine if the directory is relevant
@@ -135,12 +148,12 @@ class Afinipy(object):
                         path=root,
                         mode=self._mode,
                         package=self._package,
-                        level=pf.dir_depth(root, self._base_depth),
                         parents=self._get_parents(root),
                         files=files,
                         exclude=self._module_exclude,
                         udef_exclude=self._udef_exclude,
-                        verbose=self._verbose
+                        verbose=self._verbose,
+                        dry_run=self._dry_run
                     )
                 )
 
@@ -170,8 +183,7 @@ class Afinipy(object):
                 block = []
                 for udef in sorted(module.udefs, key=lambda x: x.lower()):
                     # Template imports
-                    block.append('from {0}{1} import {2}\n'.format(
-                        self._package,
+                    block.append('from {0} import {1}\n'.format(
                         uf.concat_imports((module.parents, module.name)),
                         udef
                         )
@@ -181,3 +193,4 @@ class Afinipy(object):
         if self._verbose:
             print('Import statements directory: ', self._name)
             print(self.imports)
+            print('\n__all__ = {}\n'.format(sorted(self.all_udefs, key=lambda x: x.lower())))

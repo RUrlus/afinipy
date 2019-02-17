@@ -1,8 +1,18 @@
 def concat_imports(values, sep='.'):
-    if isinstance(values, str):
-        return values
+    """Combine import statements
 
-    values = list(values)
+    Parameters
+    ----------
+    values : list-like
+        The values to be concatenated
+    sep : string
+        The value between the statements
+
+    Returns
+    -------
+    str
+        The concatenated string
+    """
     if len(values) >= 1:
         store = []
         for v in values:
@@ -10,11 +20,7 @@ def concat_imports(values, sep='.'):
                 store.extend(v)
             else:
                 store.append(v)
-        imports = sep.join(store)
-        if imports[0] == '.':
-            return imports[1:]
-        else:
-            return imports
+        return sep.join(store)
     else:
         return ''
 
