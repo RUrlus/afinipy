@@ -4,6 +4,7 @@ import afinipy.path_funcs as pf
 import afinipy.utils as uf
 
 from afinipy.directory import Directory
+from afinipy.exclusion_paser import ExclusionPaser
 
 from afinipy.exceptions import IllegalSetting
 from afinipy.exceptions import WrongSettingsType
@@ -27,12 +28,10 @@ class Afinipy(object):
             Optional, default is `top_level`
         package : str
             Package name; default is `None`
-        exclude : list-like
-            The directories to exclude; default is `None`
-        module_exclude : list-like
-            The modules to exclude; default is `None`
-        udef_exclude : list-like
-            The classes or functions to exclude; default is `None`
+        exclude : str, optional
+            Exclude all functions or classes
+        exclusion_path : str, optional
+            Path to the file containing the exclusions
         """
         # validate type and value of parameters
         if not isinstance(path, str):
@@ -51,12 +50,22 @@ class Afinipy(object):
         # The prefix for the import statements
         self._package = kwargs.pop('package', '')
 
-        # the directories the user wants excluded
-        self._dir_exclude = kwargs.pop('dir_exclude', set())
+        self.exclude = kwargs.pop('exclude', None)
 
-        self._module_exclude = kwargs.pop('module_exclude', set())
+        # exclusion_path to the directories the user wants excluded
+        self.exclusion_path = kwargs.pop('exclusion_path', None)
 
-        self._udef_exclude = kwargs.pop('udef_exclude', None)
+        if self.exclusion_path:
+            ep = ExclusionPaser(self.exclusion_path)
+            exclusions = ep.exclusion_parser()
+
+            self._dir_exclude = exclusions['direc']
+            self._module_exclude = exclusions['module']
+            self._udef_exclude = exclusions['udef']
+        else:
+            self._dir_exclude = set()
+            self._module_exclude = set()
+            self._udef_exclude = set()
 
         self._name = pf.dir_name(self._base_path)
 
@@ -144,7 +153,7 @@ class Afinipy(object):
             dname = pf.dir_name(root)
             # check if directory should be excluded
             if self._exclude_dir(dname):
-                    continue
+                continue
             else:
                 self.dirs.append(
                     Directory(
@@ -154,6 +163,7 @@ class Afinipy(object):
                         parents=self._get_parents(root),
                         files=files,
                         exclude=self._module_exclude,
+                        cf_exclude=self.exclude,
                         udef_exclude=self._udef_exclude,
                         verbose=self._verbose,
                         dry_run=self._dry_run

@@ -10,7 +10,7 @@ class Directory(object):
     """Class that orchastrates the parsing of a directory in
     the tree of the target directory
     """
-    def __init__(self, path, mode, package, parents, files, exclude=None, udef_exclude=None,
+    def __init__(self, path, mode, package, parents, files, exclude=None, cf_exclude=None, udef_exclude=None,
                  verbose=False, dry_run=False):
         """Initialise the class
 
@@ -28,8 +28,10 @@ class Directory(object):
             The files in the directory
         exclude : list-like
             The modules to exclude
-        udef_exclude : None, str
+        cf_exclude : str, None
             Exclude `classes` or `functions`
+        udef_exclude : set
+            Set of functions or classes to be excluded
         verbose : bool
             Print the import statements
         dry_run : bool
@@ -58,6 +60,7 @@ class Directory(object):
         self.exclude = exclude or set()
         self.exclude.update({'__init__', 'setup'})
 
+        self.cf_exclude = cf_exclude
         self.udef_exclude = udef_exclude
 
         # print import blocks
@@ -115,7 +118,8 @@ class Directory(object):
                 name=module,
                 path=os.path.join(self.root, module) + '.py',
                 parents=self.parents,
-                exclude=self.udef_exclude)
+                exclude=self.cf_exclude,
+                udef_exclude=self.udef_exclude)
             for module in self.module_names
         ]
 
