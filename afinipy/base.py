@@ -32,6 +32,10 @@ class Afinipy(object):
             Exclude all functions or classes
         exclusion_path : str, optional
             Path to the file containing the exclusions
+        verbose : bool
+            Print the import statements
+        dry_run : bool
+            Do not write the __init__ but only print
         """
         # validate type and value of parameters
         if not isinstance(path, str):
@@ -51,6 +55,9 @@ class Afinipy(object):
         self._package = kwargs.pop('package', '')
 
         self.exclude = kwargs.pop('exclude', None)
+
+        self._verbose = kwargs.pop('verbose', False)
+        self._dry_run = kwargs.pop('dry_run', False)
 
         # exclusion_path to the directories the user wants excluded
         self.exclusion_path = kwargs.pop('exclusion_path', None)
@@ -93,9 +100,9 @@ class Afinipy(object):
         dry_run : bool
             do not write, only print
         """
-        self._verbose = kwargs.pop('verbose', False)
+        self._verbose = self._verbose or kwargs.pop('verbose', False)
 
-        self._dry_run = kwargs.pop('dry_run', False)
+        self._dry_run = self._dry_run or kwargs.pop('dry_run', False)
         if self._dry_run:
             self._verbose = True
 
