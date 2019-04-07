@@ -1,9 +1,7 @@
 # AF*ini*Py -- Automated filling of __init__.py
 
 **Version:** 0.1.0
-
-**Date:**07-04-2019
-
+**Date:** 07-04-2019
 **Author:** Ralph Urlus
 
 Afinipy is a, CLI, python package that builds your init files for you.
