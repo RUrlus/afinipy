@@ -6,5 +6,6 @@ def sl_a_func2():
     pass
 
 
-def SlAClass():
-    pass
+class SlAClass():
+    def __init__(self):
+        pass

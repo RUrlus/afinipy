@@ -6,5 +6,6 @@ def fl_b_func2():
     pass
 
 
-def FlBClass():
-    pass
+class FlBClass():
+    def __init__(self):
+        pass

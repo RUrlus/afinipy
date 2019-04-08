@@ -6,5 +6,6 @@ def rl_func2():
     pass
 
 
-def RlClass():
-    pass
+class RlClass():
+    def __init__(self):
+        pass

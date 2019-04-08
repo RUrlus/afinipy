@@ -6,5 +6,6 @@ def fl_a_func2():
     pass
 
 
-def FlAClass():
-    pass
+class FlAClass():
+    def __init__(self):
+        pass
