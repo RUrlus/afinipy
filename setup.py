@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='afinipy',
@@ -6,7 +6,7 @@ setup(
     description='Automated init builder',
     author='Ralph Urlus',
     author_email='rurlus.dev@gmail.com',
-    packages=['afinipy'],
+    packages=find_packages(exclude=('tests',)),
     install_requires=[
         'Click',
     ],
