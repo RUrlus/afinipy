@@ -1,6 +1,6 @@
 # AF*ini*Py -- Automated filling of `__init__.py`
-
-**Version:** 0.1.2
+[![Travis](https://travis-ci.com/RUrlus/afinipy.svg?branch=master)](https://travis-ci.com/RUrlus/afinipy)
+**Version:** 0.1.3
 
 **Date:** 14-04-2019
 
@@ -19,6 +19,10 @@ a file and passed to the `exclusion_path` parameter. See the exclusion path sect
 All functions or all classes can be excluded by, respectively, specifying `--exclude 'functions'` or `--exclude 'classes'`
 
 ## Installation
+Install afinipy from PyPi
+```shell
+$ pip install afinipy
+```
 Install afinipy from Github with:
 ```shell
 $ pip3 install git+https://github.com/RUrlus/afinipy
