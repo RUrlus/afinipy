@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+
 import ast
 
 from afinipy.exceptions import IllegalSetting
