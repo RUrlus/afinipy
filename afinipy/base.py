@@ -114,9 +114,8 @@ class Afinipy(object):
 
         if self._mode == 'top_level':
             self.top_level()
-
-        if not self._dry_run:
-            self.write_init()
+            if not self._dry_run:
+                self.write_init()
 
     def _get_parents(self, path):
         """Get and concat parents to directory
