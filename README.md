@@ -1,8 +1,8 @@
 # AF*ini*Py -- Automated filling of `__init__.py`
 
-**Version:** 0.1.1
+**Version:** 0.1.2
 
-**Date:** 07-04-2019
+**Date:** 14-04-2019
 
 **Author:** Ralph Urlus
 
