@@ -1,7 +1,7 @@
 import os
 import pickle
 
-from afinipy.base import Afinipy
+from afinipy import Afinipy
 
 TEST_DIR = os.path.realpath(os.path.dirname(__file__))
 
