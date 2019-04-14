@@ -1,11 +1,10 @@
 dist: xenial
 language: python
 python:
-  - '2.7'
-  - '3.4'
-  - '3.5'
-  - '3.6'
-  - '3.7'
+  - "2.7"
+  - "3.4"
+  - "3.5"
+  - "3.6"
   - 'pypy3.5'
 install:
   - pip install pytest
@@ -14,6 +13,8 @@ script:
   - pytest
 deploy:
   provider: pypi
-    user: "rurlus"
-    password:
-      secure: XYjpcy4QTwTopwbitxPV8UAkuah9c722mJximp/zBwd4XmCqrogWZs/IwgWHEPW1myeUtXJQBy1oj/kexvp420FHU6sRq9S0FuoME2Mij+anS9xrxHjJHSXbvZkPqKgsGSmkBoHh6q5WzFbWkU94UhKEDTWQhTQzekIP1n9qTYt193d0/SRo4AIk7wvzp8pqeCJTBDd+0iXKmeIGOEp4N7No9+7Gq/A/YGvFNI0WZAk49NCNDzQ/DwMAb3ZRxjnNFqcd5HvgvYA7v3FxRhVl+2COf+yzo4OS+OtMsz61msF4SBGgHam3pMg/XqjpwMxAn3giazs8BlTuqlUh7j8K9yQhmW6E+rECNxQTYPuujgl+kQBbMAfdlKRnukR3h3Sezi8r7DRcnoj7mvhtc1SxO0PVKSsyDgLACeQP+qAwYwcr75QQciFLTEpQpk3nNfI+LnJGHCAR9tSsP+7NKqkLnGJoMlLD4yyii25h39+ZHXK6y5gVeZlYCvT0iW6qcr4wAmAFoEQMPkOMyd9b+hy0deMfNpqnaRbr9Mb01PSayJfNzKx29RBW30YyIz9TO0vgN4JrMPsF9PD3W4fTlmlw/s7AGDkjrq1zfSf/yiUTxJDDrQFQi+HwZdTHGj7BrX+w05LjxBgvl/97SUoZ03W3wjTfkIcRpKnEMPxtvJD31Yw=
+  user: "rurlus"
+  password:
+    secure: XYjpcy4QTwTopwbitxPV8UAkuah9c722mJximp/zBwd4XmCqrogWZs/IwgWHEPW1myeUtXJQBy1oj/kexvp420FHU6sRq9S0FuoME2Mij+anS9xrxHjJHSXbvZkPqKgsGSmkBoHh6q5WzFbWkU94UhKEDTWQhTQzekIP1n9qTYt193d0/SRo4AIk7wvzp8pqeCJTBDd+0iXKmeIGOEp4N7No9+7Gq/A/YGvFNI0WZAk49NCNDzQ/DwMAb3ZRxjnNFqcd5HvgvYA7v3FxRhVl+2COf+yzo4OS+OtMsz61msF4SBGgHam3pMg/XqjpwMxAn3giazs8BlTuqlUh7j8K9yQhmW6E+rECNxQTYPuujgl+kQBbMAfdlKRnukR3h3Sezi8r7DRcnoj7mvhtc1SxO0PVKSsyDgLACeQP+qAwYwcr75QQciFLTEpQpk3nNfI+LnJGHCAR9tSsP+7NKqkLnGJoMlLD4yyii25h39+ZHXK6y5gVeZlYCvT0iW6qcr4wAmAFoEQMPkOMyd9b+hy0deMfNpqnaRbr9Mb01PSayJfNzKx29RBW30YyIz9TO0vgN4JrMPsF9PD3W4fTlmlw/s7AGDkjrq1zfSf/yiUTxJDDrQFQi+HwZdTHGj7BrX+w05LjxBgvl/97SUoZ03W3wjTfkIcRpKnEMPxtvJD31Yw=
+  on:
+    tags: true
