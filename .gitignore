@@ -109,4 +109,9 @@ venv.bak/
 *notebooks*
 
 *examples*
-*tests*/*__init__*
+*tests/recursive_test/__init__.py
+*tests/top_level_test/__init__.py
+*tests/recursive_test/L1a/__init__.py
+*tests/recursive_test/L1b/__init__.py
+*tests/recursive_test/L1a/L2a/__init__.py
+*tests/recursive_test/L1a/L2a/L3a/__init__.py
