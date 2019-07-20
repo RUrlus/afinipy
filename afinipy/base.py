@@ -14,10 +14,10 @@ from afinipy.exceptions import WrongSettingsType
 
 class Afinipy(object):
     """Base class that orchastrates the parsing and creation of
-    the __init__ file
+    the __init__ file.
     """
     def __init__(self, path, **kwargs):
-        """Initialise the class
+        """Initialise the class.
 
         Parameters
         ----------
@@ -38,6 +38,7 @@ class Afinipy(object):
             Print the import statements
         dry_run : bool
             Do not write the __init__ but only print
+
         """
         # validate type and value of parameters
         if not isinstance(path, str):
@@ -50,7 +51,10 @@ class Afinipy(object):
         self._mode = kwargs.pop('mode', 'top_level')
 
         # validate mode setting
-        if (self._mode is not None) and (self._mode not in {'top_level', 'recursive'}):
+        if (
+            (self._mode is not None) and
+            (self._mode not in {'top_level', 'recursive'})
+        ):
             raise IllegalSetting('mode', self._mode)
 
         # The prefix for the import statements
@@ -89,7 +93,7 @@ class Afinipy(object):
         self.dirs = []
 
     def build_init(self, **kwargs):
-        """Create the init file(s)
+        """Create the init file(s).
 
         Run the directory parser which will build inits per
         directory if mode is recursive else collect all statements
@@ -101,6 +105,7 @@ class Afinipy(object):
             Print import statements; default is `False`
         dry_run : bool
             do not write, only print
+
         """
         self._verbose = self._verbose or kwargs.pop('verbose', False)
 
@@ -120,7 +125,7 @@ class Afinipy(object):
                 self.write_init()
 
     def _get_parents(self, path):
-        """Get and concat parents to directory
+        """Get and concat parents to directory.
 
         Parameters
         ----------
@@ -131,11 +136,14 @@ class Afinipy(object):
         -------
         str
             The parents concatonated with seperator sep
+
         """
-        return uf.concat_imports((self._package, pf.path_list(path)[self._base_depth:]))
+        return uf.concat_imports(
+            (self._package, pf.path_list(path)[self._base_depth:])
+        )
 
     def _exclude_dir(self, d):
-        """Determine if the directory is relevant
+        """Determine if the directory is relevant.
 
         Parameters
         ----------
@@ -146,13 +154,14 @@ class Afinipy(object):
         -------
         bool
             whether to exclude the directory
+
         """
         return (d[0] in {'_', '.'}) or (d in self._dir_exclude)
 
     def directory_parser(self):
         """Recursively search the target directory and create collection
         all directory classes with the python modules in that directory
-        as attribute
+        as attribute.
         """
 
         # Loop through all directories in and below base_path
@@ -179,22 +188,25 @@ class Afinipy(object):
                 )
 
     def write_init(self):
-        """Write the imports string and all_udefs list to the init file
-
-        """
-        with open(os.path.join(self._base_path, '__init__.py'), 'w+') as init_file:
+        """Write the imports string and all_udefs list to the init file."""
+        init_path = os.path.join(self._base_path, '__init__.py')
+        with open(init_path, 'w+') as init_file:
             # Write the __init__, create if it doesn't exist
             init_file.write(self.imports)
 
             # The objects that will be added for __all__
             # Template for __all__ functions in all modules
-            init_file.write('\n__all__ = {}\n'.format(sorted(self.all_udefs, key=lambda x: x.lower())))
+            self._write_all(init_file)
+            self._write_credit(init_file)
+
         init_file.close()
-        print('{} has been appended/generated\n'.format(os.path.join(self._base_path, '__init__.py')))
+        print('{} has been appended/generated\n'.format(
+            os.path.join(self._base_path, '__init__.py')
+        ))
 
     def top_level(self):
         """Create __init__ at root level with all user defined functions
-        and classes in the directory tree
+        and classes in the directory tree.
         """
         self.imports = []
         self.all_udefs = []
@@ -214,4 +226,36 @@ class Afinipy(object):
         if self._verbose:
             print('Import statements directory: ', self._name)
             print(self.imports)
-            print('\n__all__ = {}\n'.format(sorted(self.all_udefs, key=lambda x: x.lower())))
+            self._write_all()
+
+    def _write_all(self, init_file=None):
+        """Write the __all__ line to the init.
+
+        Parameters
+        ----------
+        init_file : _io.TextIOWrapper, optional
+            file connection to init_file. If optional the all list
+            is printed.
+
+        """
+        all_ = '\n__all__ = {}\n'.format(
+            sorted(self.all_udefs, key=lambda x: x.lower())
+        )
+        if init_file:
+            init_file.write(all_)
+        else:
+            print(all_)
+
+    def _write_credit(self, init_file=None):
+        """Write the __all__ line to the init.
+
+        Parameters
+        ----------
+        init_file : _io.TextIOWrapper, optional
+            file connection to init_file. If optional the all list
+            is printed.
+
+        """
+        init_file.write(
+            '\n\n # this __init__ was automatically generated by afinipy'
+        )

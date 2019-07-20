@@ -18,7 +18,7 @@ See https://github.com/RUrlus/afinipy for details
 
 setup(
     name='afinipy',
-    version='0.1.4',
+    version='0.1.5',
     description='Automated init builder',
     author='Ralph Urlus',
     author_email='rurlus.dev@gmail.com',
