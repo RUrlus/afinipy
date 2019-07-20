@@ -10,7 +10,7 @@ in the examples directory.
 
 All 'private' functions, those starting with an underscore, are excluded from the init. Optionally,
 additional functions, classes or the contents of a directory can be excluded by specifying them in
-a file and passed to the `exclusion_path` parameter. 
+a file and passed to the `exclusion_path` parameter.
 All functions or all classes can be excluded by, respectively, specifying `--exclude 'functions'` or `--exclude 'classes'`
 
 See https://github.com/RUrlus/afinipy for details

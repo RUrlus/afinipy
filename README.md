@@ -1,9 +1,9 @@
 # AF*ini*Py -- Automated filling of `__init__.py`
 [![Travis CI](https://travis-ci.com/RUrlus/afinipy.svg?branch=master)](https://travis-ci.com/RUrlus/afinipy)
 
-**Version:** 0.1.4
+**Version:** 0.1.5
 
-**Date:** 14-04-2019
+**Date:** 20-07-2019
 
 **Author:** Ralph Urlus
 
