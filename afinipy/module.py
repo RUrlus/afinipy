@@ -9,8 +9,10 @@ class Module(object):
     """Class that orchastrates the parsing of a module in
     the tree of the target directory
     """
-    def __init__(self, name, path, parents, udef_exclude, exclude=None):
-        """Initialise the class
+    def __init__(
+        self, name, path, parents, udef_exclude, exclude=None
+    ):
+        """Initialise the class.
 
         Parameters
         ----------
@@ -24,6 +26,7 @@ class Module(object):
             Set of classes or functions that are to be excluded
         exclude : None, str
             Exclude classes or functions.
+
         """
 
         # name of the class is the module name
@@ -57,7 +60,10 @@ class Module(object):
         bool
             Whether the value should be extracted
         """
-        return (isinstance(v, (ast.ClassDef, ast.FunctionDef)) and (v.name[0] != '_'))
+        return (
+            isinstance(v, (ast.ClassDef, ast.FunctionDef)) and
+            (v.name[0] != '_')
+        )
 
     def _extract_classes(self, v):
         """Determine is value should be extracted
@@ -97,20 +103,26 @@ class Module(object):
         if self.exclude is None:
             # Extract both classes and functions from module, excluding
             # those that begin with `_`
-            self.udefs = [n.name for n in ast.iter_child_nodes(mroot) if
-                          (self._extract(n)) and (n.name not in self.udef_exclude)]
+            self.udefs = [
+                n.name for n in ast.iter_child_nodes(mroot) if
+                (self._extract(n)) and (n.name not in self.udef_exclude)
+            ]
 
         elif self.exclude == 'functions':
             # Extract classes from module, excluding
             # those that begin with `_`
-            self.udefs = [n.name for n in ast.iter_child_nodes(mroot) if
-                          (self._extract_classes(n)) and (n.name not in self.udef_exclude)]
+            self.udefs = [
+                n.name for n in ast.iter_child_nodes(mroot) if
+                (self._extract_classes(n)) and (n.name not in self.udef_exclude)
+            ]
 
         elif self.exclude == 'classes':
             # Extract functions from module, excluding
             # those that begin with `_`
-            self.udefs = [n.name for n in ast.iter_child_nodes(mroot) if
-                          (self._extract_funcs(n)) and (n.name not in self.udef_exclude)]
+            self.udefs = [
+                n.name for n in ast.iter_child_nodes(mroot) if
+                (self._extract_funcs(n)) and (n.name not in self.udef_exclude)
+            ]
 
         else:
             raise IllegalSetting('exclude', self.exclude)
