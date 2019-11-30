@@ -117,7 +117,7 @@ class Afinipy(BaseClass):
         # reset self.dirs to prevent extending
         self.dirs = []
 
-        # start p.arsing
+        # start parsing
         self.directory_parser()
 
         if self._mode == 'top_level':
@@ -206,7 +206,7 @@ class Afinipy(BaseClass):
                         )
                     )
                 self.imports.append(''.join(block))
-        self.imports = '\n'.join(self.imports)
+        self.imports = '\n'.join(self.imports) + '\n'
         if self._verbose:
             print('Import statements directory: ', self._name)
             print(self.imports)
