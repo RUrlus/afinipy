@@ -1,9 +1,9 @@
 # AF*ini*Py -- Automated filling of `__init__.py`
 [![Travis CI](https://travis-ci.com/RUrlus/afinipy.svg?branch=master)](https://travis-ci.com/RUrlus/afinipy)
 
-**Version:** 0.1.5
+**Version:** 0.2.0
 
-**Date:** 20-07-2019
+**Date:** 30-11-2019
 
 **Author:** Ralph Urlus
 
@@ -67,5 +67,5 @@ udefs: <function_name>, <another function_name>
 ```
 
 ## License
-- **[GNU license](https://opensource.org/licenses/GPL-3.0)**
+- **[BSD3 License](https://spdx.org/licenses/BSD-3-Clause.html)**
 - Copyright 2019 @ Ralph Urlus

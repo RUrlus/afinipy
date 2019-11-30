@@ -18,7 +18,7 @@ See https://github.com/RUrlus/afinipy for details
 
 setup(
     name='afinipy',
-    version='0.1.5',
+    version='0.2.0',
     description='Automated init builder',
     author='Ralph Urlus',
     author_email='rurlus.dev@gmail.com',
@@ -31,7 +31,7 @@ setup(
         [console_scripts]
         afinipy=afinipy.afinipy:cli
     ''',
-    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, <4',
+    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4',
     project_urls={  # Optional
         'Bug Reports': 'https://github.com/RUrlus/afinipy/issues',
         'Source': 'https://github.com/RUrlus/afinipy',
@@ -49,7 +49,7 @@ setup(
         'Topic :: Software Development :: Build Tools',
 
         # Pick your license as you wish
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'License :: OSI Approved :: BSD3',
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
@@ -58,7 +58,6 @@ setup(
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
