@@ -1,5 +1,8 @@
+"""Utility functions for afinipy."""
+
+
 def concat_imports(values, sep='.'):
-    """Combine import statements
+    """Combine import statements.
 
     Parameters
     ----------
@@ -12,6 +15,7 @@ def concat_imports(values, sep='.'):
     -------
     str
         The concatenated string
+
     """
     if len(values) >= 1:
         store = []
@@ -26,8 +30,7 @@ def concat_imports(values, sep='.'):
 
 
 def notin(validate, baseline):
-    """Determine wich elements are not present in the baseline
-    but are present in the `validate set`
+    """Determine elements not in validate.
 
     Parameters
     ----------
@@ -39,14 +42,14 @@ def notin(validate, baseline):
     Returns
     -------
     set
-        Set containing the element not in baseline
+        List containing the elements not in baseline
+
     """
     return set(validate) - set(baseline)
 
 
 def ordered_notin(validate, baseline):
-    """Determine wich elements are not present in the baseline
-    but are present in the `validate set`
+    """Determine elements not in validate.
 
     Parameters
     ----------
@@ -57,7 +60,8 @@ def ordered_notin(validate, baseline):
 
     Returns
     -------
-    set
-        Set containing the element not in baseline
+    list
+        List containing the elements not in baseline
+
     """
     return [v for v in validate if v not in baseline]
