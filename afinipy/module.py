@@ -1,3 +1,5 @@
+"""Module class definition."""
+
 from __future__ import absolute_import
 
 import ast
@@ -6,9 +8,23 @@ from afinipy.exceptions import IllegalSetting
 
 
 class Module(object):
-    """Class that orchastrates the parsing of a module in
-    the tree of the target directory
+    """Module class that orchastrates the creation of the __init__ file.
+
+    Parameters
+    ----------
+    name : str
+        The name of the module
+    path : str
+        The absolute path to the module includign extension
+    parents : str
+        The parent directories starting at the target path
+    udef_exclude : set
+        Set of classes or functions that are to be excluded
+    exclude : None, str
+        Exclude classes or functions.
+
     """
+
     def __init__(
         self, name, path, parents, udef_exclude, exclude=None
     ):
@@ -28,7 +44,6 @@ class Module(object):
             Exclude classes or functions.
 
         """
-
         # name of the class is the module name
         self.name = name
 
@@ -49,7 +64,7 @@ class Module(object):
         self.module_parser()
 
     def _extract(self, v):
-        """Determine is value should be extracted
+        """Determine if value should be extracted.
 
         Parameters
         ----------
@@ -59,6 +74,7 @@ class Module(object):
         -------
         bool
             Whether the value should be extracted
+
         """
         return (
             isinstance(v, (ast.ClassDef, ast.FunctionDef)) and
@@ -66,7 +82,7 @@ class Module(object):
         )
 
     def _extract_classes(self, v):
-        """Determine is value should be extracted
+        """Determine if value should be extracted.
 
         Parameters
         ----------
@@ -76,11 +92,12 @@ class Module(object):
         -------
         bool
             Whether the value should be extracted
+
         """
         return (isinstance(v, ast.ClassDef) and (v.name[0] != '_'))
 
     def _extract_funcs(self, v):
-        """Determine is value should be extracted
+        """Determine if value should be extracted.
 
         Parameters
         ----------
@@ -90,12 +107,12 @@ class Module(object):
         -------
         bool
             Whether the value should be extracted
+
         """
         return (isinstance(v, ast.FunctionDef) and (v.name[0] != '_'))
 
     def module_parser(self):
-        """Extract both classes and functions from module"""
-
+        """Extract both classes and functions from module."""
         # parse the file and create a syntax tree
         with open(self.path) as fh:
             mroot = ast.parse(fh.read(), self.path)

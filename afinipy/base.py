@@ -1,3 +1,4 @@
+"""Definition of base class."""
 from __future__ import absolute_import
 
 import os
@@ -14,9 +15,30 @@ from afinipy.exceptions import WrongSettingsType
 
 
 class Afinipy(BaseClass):
-    """Base class that orchastrates the parsing and creation of
-    the __init__ file.
+    """Base class that orchastrates the creation of the __init__ file.
+
+    Parameters
+    ----------
+    path : str
+        The path to the root of the directory
+    mode : str
+        The mode to run afinipy in. Options are:
+        - top_level: everything is set in top level __init__
+        - recursive: each directory level gets own __init__
+        Optional, default is `top_level`
+    package : str
+        Package name; default is `None`
+    exclude : str, optional
+        Exclude all functions or classes
+    exclusion_path : str, optional
+        Path to the file containing the exclusions
+    verbose : bool
+        Print the import statements
+    dry_run : bool
+        Do not write the __init__ but only print
+
     """
+
     def __init__(self, path, **kwargs):
         """Initialise the class.
 
@@ -160,11 +182,11 @@ class Afinipy(BaseClass):
         return (d[0] in {'_', '.'}) or (d in self._dir_exclude)
 
     def directory_parser(self):
-        """Recursively search the target directory and create collection
-        all directory classes with the python modules in that directory
-        as attribute.
-        """
+        """Recursively search the target directory.
 
+        Search directory and  create collection all directory classes with the
+        python modules in that directory as attribute.
+        """
         # Loop through all directories in and below base_path
         for root, dirs, files in os.walk(self._base_path):
             # extract the name of current directory
@@ -189,7 +211,9 @@ class Afinipy(BaseClass):
                 )
 
     def top_level(self):
-        """Create __init__ at root level with all user defined functions
+        """Create __init__ at root level.
+
+        Top level inits include all user defined functions
         and classes in the directory tree.
         """
         self.imports = []

@@ -1,3 +1,5 @@
+"""Functions dealing with paths."""
+
 from __future__ import absolute_import
 
 import os
@@ -6,7 +8,7 @@ from afinipy.exceptions import DirectoryNotFound
 
 
 def path_list(path):
-    """The path to the directory split on os.path.sep
+    """Split the path to the directory split on os.path.sep.
 
     Parameters
     ----------
@@ -14,15 +16,18 @@ def path_list(path):
         Path to directory
 
     Returns:
+    --------
     list
         list of names of the directories in the path
+
     """
     return path.split(os.path.sep)
 
 
 def dir_depth(path, base_depth=None):
-    """The number of directories below the system root. If base_depth
-    is passed the relative directory level is returned
+    """Count the number of directories below the system root.
+
+    If base_depth is passed the relative directory level is returned
 
     Parameters
     ----------
@@ -32,8 +37,10 @@ def dir_depth(path, base_depth=None):
         The dir_depth of the relative root
 
     Returns:
+    --------
     int
         the absolute or relative dir level
+
     """
     if isinstance(base_depth, (int, float)):
         return len(path.split(os.path.sep)) - base_depth
@@ -42,7 +49,7 @@ def dir_depth(path, base_depth=None):
 
 
 def dir_name(path):
-    """Get name of the directory
+    """Get name of the directory.
 
     Parameters
     ----------
@@ -53,12 +60,13 @@ def dir_name(path):
     -------
     str
         The name of the directory
+
     """
     return os.path.split(path)[-1]
 
 
 def adir(path):
-    """Get full path to dir
+    """Get full path to dir.
 
     Parameters
     ----------
@@ -74,6 +82,7 @@ def adir(path):
     ------
     DirectoryNotFound
         If the path does not exist
+
     """
     apath = os.path.abspath(path)
     if not os.path.isdir(apath):
@@ -82,23 +91,25 @@ def adir(path):
 
 
 def wdir():
-    """Get absolute path to working directory
+    """Get absolute path to working directory.
 
     Returns
     -------
     str
         abs path to working directory
+
     """
     return os.getcwd()
 
 
 def mdir():
-    """Get absolute path to module/notebook directory
+    """Get absolute path to module/notebook directory.
 
     Returns
     -------
     str
         abs path to dir where file is located
+
     """
     try:
         p = os.path.realpath(os.path.dirname(__main__))
@@ -108,18 +119,19 @@ def mdir():
 
 
 def pdir():
-    """Get absolute path to parent directory
+    """Get absolute path to parent directory.
 
     Returns
     -------
     str
         abs path to parent directory
+
     """
     return os.path.realpath(os.path.pardir)
 
 
 def sdir(dirname, filename=None):
-    """Get path to sibling directory of name `dirname`
+    """Get path to sibling directory of name `dirname`.
 
     Parameters
     ----------
@@ -132,6 +144,7 @@ def sdir(dirname, filename=None):
     -------
     str
         path to sibling directory or file
+
     """
     if isinstance(dirname, (tuple, list)):
         dirname = os.path.join(*dirname)

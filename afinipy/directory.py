@@ -1,3 +1,4 @@
+"""Definition of directory class."""
 from __future__ import absolute_import
 
 import os
@@ -10,9 +11,33 @@ from afinipy.base_class import BaseClass
 
 
 class Directory(BaseClass):
-    """Class that orchastrates the parsing of a directory in
-    the tree of the target directory
+    """Base class that orchastrates the creation of the __init__ file.
+
+    Parameters
+    ----------
+    path : str
+        The path to the root of the directory
+    mode : str
+        top_level or recursive
+    package : str
+        the prefix for the import statement ['.', 'package_name']
+    parents : str
+        The parent directories starting at the target path
+    files : list
+        The files in the directory
+    exclude : list-like
+        The modules to exclude
+    cf_exclude : str, None
+        Exclude `classes` or `functions`
+    udef_exclude : set
+        Set of functions or classes to be excluded
+    verbose : bool
+        Print the import statements
+    dry_run : bool
+        do not write, only print
+
     """
+
     def __init__(
         self, path, mode, package, parents, files, exclude=None,
         cf_exclude=None, udef_exclude=None, verbose=False, dry_run=False
@@ -99,6 +124,7 @@ class Directory(BaseClass):
         -------
         bool
             whether the file is a python module that is relevant
+
         """
         if os.path.isfile(os.path.join(self.root, f)):
             name, ext = os.path.splitext(f)
@@ -109,9 +135,9 @@ class Directory(BaseClass):
             return False
 
     def files_parser(self):
-        """Filter the python modules from the files and set as modules,
-        where we exclude dotfiles, files starting with `_` and
-        __init__ files.
+        """Filter the python modules from the files and set as modules.
+
+        We exclude dotfiles, files starting with `_` and __init__ files.
 
         For each module we create a Module instance that extracts the
         functions and classes without importing and correcting for
