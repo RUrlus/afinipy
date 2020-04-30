@@ -1,6 +1,8 @@
 # AF*ini*Py -- Automated filling of `__init__.py`
 [![Travis CI](https://travis-ci.com/RUrlus/afinipy.svg?branch=master)](https://travis-ci.com/RUrlus/afinipy)
-
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=RUrlus_afinipy&metric=alert_status)](https://sonarcloud.io/dashboard?id=RUrlus_afinipy)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=RUrlus_afinipy&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=RUrlus_afinipy)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=RUrlus_afinipy&metric=security_rating)](https://sonarcloud.io/dashboard?id=RUrlus_afinipy)
 **Version:** 0.2.0
 
 **Date:** 30-11-2019
